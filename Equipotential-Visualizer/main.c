@@ -27,18 +27,7 @@
 // define coulombs constant
 #define coul (8.99e9)
 
-void setupGrid(void) {
-    double dx = (Xmax - Xmin) / (Nx - 1);
-    double dy = (Ymax - Ymin) / (Ny - 1);
-
-    for (int i = 0; i < Nx; i++) {
-        for (int j = 0; j < Ny; j++) {
-            double x = Xmin + i * dx;
-            double y = Ymin + j * dy;
-            printf("Grid Point (%d, %d) -> (%.2f, %.2f)\n", i, j, x, y);
-        }
-    }
-}
+double V[Nx][Ny];
 
 /**
  *  @brief Function calculates the potential difference of any provided point
@@ -65,10 +54,22 @@ double calcVolt(int Px, int Py) {
     return (coul * chargeMag)/distanceToCharge;
 }
 
+void setupGrid(void) {
+    double dx = (Xmax - Xmin) / (Nx - 1);
+    double dy = (Ymax - Ymin) / (Ny - 1);
+
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            double x = Xmin + i * dx;
+            double y = Ymin + j * dy;
+            V[i][j] = calcVolt(i, j);
+            printf("Grid Point (%d, %d) -> (%.2f, %.2f) with ∆V of %.10e\n", i, j, x, y, V[i][j]);
+        }
+    }
+}
+
 int main(int argc, const char * argv[]) {
     setupGrid();
-    
-    printf("The potential difference of a particle at point 51, 52 is %.5e\n", calcVolt(51, 52));
     
     return 0;
 }
