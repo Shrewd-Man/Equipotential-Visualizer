@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+
 // define the spacial boundries of the simulation
 #define Xmin -5.0
 #define Xmax 5.0
@@ -16,8 +17,8 @@
 #define Ymax 5.0
 
 // define the resolution (points) of the simulation within the boundries
-#define Nx 100
-#define Ny 100
+#define Nx 1000
+#define Ny 1000
 
 // define the placement and magnitude of the point charge
 #define chargeX 0
@@ -26,6 +27,7 @@
 
 // define coulombs constant
 #define coul (8.99e9)
+
 
 double V[Nx][Ny];
 
@@ -51,25 +53,30 @@ double calcVolt(int Px, int Py) {
     
     double distanceToCharge = sqrt(pow(fabs(xGridPoint - chargeX), 2) + pow(fabs(yGridPoint - chargeY), 2));
     
+    //printf("Grid Point (%d, %d) -> (%.2f, %.2f)\n", Px, Py, xGridPoint, yGridPoint);
+    
     return (coul * chargeMag)/distanceToCharge;
 }
 
 void setupGrid(void) {
-    double dx = (Xmax - Xmin) / (Nx - 1);
-    double dy = (Ymax - Ymin) / (Ny - 1);
-
     for (int i = 0; i < Nx; i++) {
         for (int j = 0; j < Ny; j++) {
-            double x = Xmin + i * dx;
-            double y = Ymin + j * dy;
             V[i][j] = calcVolt(i, j);
-            printf("Grid Point (%d, %d) -> (%.2f, %.2f) with ∆V of %.10e\n", i, j, x, y, V[i][j]);
         }
     }
 }
 
+void renderEqLines(void) {
+    printf("Render Later boy");
+}
+
+
+
+
 int main(int argc, const char * argv[]) {
     setupGrid();
+    
+    renderEqLines();
     
     return 0;
 }
