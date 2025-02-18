@@ -65,7 +65,7 @@ void setupGrid(void) {
     }
 }
 
-int findFurthestWall(int Cx, int Cy) { // find the wall furthest from the charge
+int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest from the charge
     int distances[4];
     int toRightWall = (Nx - Cx);
     int toLeftWall = Cx;
@@ -84,7 +84,12 @@ int findFurthestWall(int Cx, int Cy) { // find the wall furthest from the charge
         }
     }
     
-    return maxIndex;
+    // return value based on indexReq
+    if(indexReq) {
+        return maxIndex;
+    } else {
+        return distances[maxIndex];
+    }
 }
 
 /**
@@ -100,8 +105,14 @@ int findFurthestWall(int Cx, int Cy) { // find the wall furthest from the charge
 void renderEqLines(int Cx, int Cy) {
     printf("Pass\n");
     
-    int directionToFurthestWall = findFurthestWall(Cx, Cy); // Use 0 for up, 1 for down, 2 for right, and 3 for left
+    // Use 0 for up, 1 for down, 2 for right, and 3 for left
+    int directionToFurthestWall = findFurthestWall(Cx, Cy, 1); // gather the direction of the distance
+    int distanceToWall = findFurthestWall(Cx, Cy, 0); // gather the VALUE of the distance
     
+    int n = distanceToWall / 25;
+    double *lineData = (double *)malloc(n * sizeof(double));
+    
+    free(lineData);
 }
 
 int main(int argc, const char * argv[]) {
