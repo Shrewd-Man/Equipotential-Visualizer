@@ -5,6 +5,10 @@ I started this project to challenge myself and improve my C skills. The goal is 
 
 ## Installation
 Currently, this project does not have an installation option, as it is in its early stages of development. The code can be viewed in the "Equipotential-Visualizer > Equipotential-Visualizer > main.c" file.
+To compile and run:
+- Navigate to the project directory
+- Use `gcc main.c -o equipotential -lm` to compile (assuming you use math functions)
+- Run `./equipotential`
 
 ## Usage
 Please use in compliance with the GPL - 3.0 license. Details can be found in the file "Equipotential-Visualizer > LICENSE".
