@@ -21,7 +21,6 @@
 #define Nx 1000
 #define Ny 1000
 #define lineInc 50
-//#define IMAGE_SIZE 200
 
 // define the placement and magnitude of the point charge using points as opposed to spacial position
 #define chargeX 500
