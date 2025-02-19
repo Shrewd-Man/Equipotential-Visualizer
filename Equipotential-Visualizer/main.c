@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 // define the spacial boundries of the simulation
 #define Xmin -5.0
@@ -16,13 +18,14 @@
 #define Ymax 5.0
 
 // define the resolution (points) of the simulation within the boundries and the increments of the lines to render
-#define Nx 100
-#define Ny 100
-#define lineInc 10
+#define Nx 1000
+#define Ny 1000
+#define lineInc 50
+//#define IMAGE_SIZE 200
 
 // define the placement and magnitude of the point charge using points as opposed to spacial position
-#define chargeX 15
-#define chargeY 30
+#define chargeX 500
+#define chargeY 500
 #define chargeMag (1.0e-6)  // 1 microcoulomb
 
 // define coulombs constant
@@ -50,7 +53,10 @@ double calcVolt(int Px, int Py) {
     double xGridPoint = Xmin + Px * dx;
     double yGridPoint = Ymin + Py * dy;
     
-    double distanceToCharge = sqrt(pow(xGridPoint - chargeX, 2) + pow(yGridPoint - chargeY, 2));
+    double chargeX_phys = Xmin + chargeX * dx;
+    double chargeY_phys = Ymin + chargeY * dy;
+
+    double distanceToCharge = sqrt(pow(xGridPoint - chargeX_phys, 2) + pow(yGridPoint - chargeY_phys, 2));
     
     //printf("Grid Point (%d, %d) -> (%.2f, %.2f)\n", Px, Py, xGridPoint, yGridPoint); <-- Save for printing in case of error
     
@@ -119,12 +125,17 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
 }
 
 /**
- * @note The plan is to use an array thats sized based on the distance from the charge to the furthest wall.
- * The function will then look through each point on the line from the charge to the furthest wall and take the value of every 25 points, storing it in the array.
- * Using each value, the program will then render the points where the values fall within a specified "grace" range of one of the values in the array as a gray color,
- * and the array index the value falls under will decide the shade of gray the values should be.
+ *  @brief The function creates a png image of the rendered eq lines
  *
- * Later, use a for loop to iterate this for each charge using the same array, that way we dont need to allocate a ton of memory, and we can just use the one array to calculate lines for every charge
+ *  The function performs as follows:
+ *  - The function first determines which wall (up, down, right, or left) is the furthest from the charge. It also calculates how far away this wall is, in terms of grid points.
+ *  - Based on the distance to the furthest wall and a predefined increment (like 10 grid points per step), it calculates how many "rings" or equipotential lines need to be drawn. Each "ring" represents a set of points where the potential difference (∆V) is constant.
+ *  - It dynamically allocates memory for an array where each element will represent one of these rings. The size of this array corresponds to the number of rings calculated from the distance to the furthest wall divided by the increment.
+ *  - For each ring, the function computes the potential at specific points along the line from the charge to the wall at intervals defined by the increment. These potential values are stored in the array, representing the voltage at each ring's position.
+ *  - The function then generates a PNG image where points with a potential that matches one of the calculated ring values (within some tolerance) are colored white. These points form the equipotential lines or "rings". All other points are colored black.
+ *
+ *  @param Cx the x location of the charge
+ *  @param Cy the y position of the charge
  */
 
 // render
@@ -143,12 +154,13 @@ void renderEqLines(int Cx, int Cy) {
         return;
     }
     
-    double *lineData = (double *)malloc(lineCount * sizeof(double));
+    double *lineData = (double *)malloc(lineCount * sizeof(double)); // allocate and double check memory allocation
     if (lineData == NULL) {
         fprintf(stderr, "Memory allocation failed for lineData\n");
         return;
     }
     
+    // using a for loop and a switch case to calculate the ∆V values to render based on direction to wall
     for (int i = 0; i < lineCount; i++) {
         switch (directionToFurthestWall) { // use direction to fill in calues every 25 pts
             case 0: // up
@@ -163,26 +175,58 @@ void renderEqLines(int Cx, int Cy) {
             case 3: // left
                 lineData[i] = V[Cx - (i * lineInc)][Cy];
                 break;
-            default:
+            default: // in case the direction function returned something weird (shouldnt happen btw)
                 printf("Error analyzing value of direction %d", directionToFurthestWall);
                 break;
         }
     }
     
+    // The following simply prints some values for double checking accuracy within the terminal
     printf("Progress check.\nLineData:\n");
     for (int i = 0; i < lineCount; i++) {
         printf("\n  %d: %.2e", i, lineData[i]);
     }
     printf("\nCharge (%d, %d) is furthest from wall %d, and is %d points away.\n", chargeX, chargeY, directionToFurthestWall, distanceToWall);
     
+    // create a base for the grace value to get consistent lines
+    double graceBase = 250;
+    
+    // create the img array in B&W
+    unsigned char img[Nx][Ny];
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            img[i][j] = 0;  // Black background
+        }
+    }
+    
+    // Fill in the img array with color values based on whether they match the ones saved prior
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            for (int k = 0; k < lineCount; k++) {
+                double grace = graceBase / ((k + 1) * (k + 1));
+                if(fabs(V[i][j] - lineData[k]) < grace) {
+                    img[i][j] = 255;  // White
+                }
+            }
+        }
+    }
+    
+    // set the charge point to a white pixel
+    img[chargeX][chargeY] = 255; // White
+    
+    // send the image (Replace with desired file location)
+    stbi_write_png("./eqLinesRendered.png", Nx, Ny, 1, img, Nx);
     free(lineData);
 }
 
 int main(int argc, const char * argv[]) {
     
+    // calculate all ∆V values
     setupGrid();
     
+    // render the image
     renderEqLines(chargeX, chargeY);
     
+    // exit the program
     return 0;
 }
