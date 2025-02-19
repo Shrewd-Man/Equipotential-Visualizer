@@ -20,10 +20,10 @@
 #define Ny 100
 #define lineInc 10
 
-// define the placement and magnitude of the point charge
+// define the placement and magnitude of the point charge using points as opposed to spacial position
 #define chargeX 15
 #define chargeY 30
-#define chargeMag (1.062e-19)
+#define chargeMag (1.0e-6)  // 1 microcoulomb
 
 // define coulombs constant
 #define coul (8.99e9)
@@ -50,11 +50,11 @@ double calcVolt(int Px, int Py) {
     double xGridPoint = Xmin + Px * dx;
     double yGridPoint = Ymin + Py * dy;
     
-    double distanceToCharge = sqrt(pow(fabs(xGridPoint - chargeX), 2) + pow(fabs(yGridPoint - chargeY), 2));
+    double distanceToCharge = sqrt(pow(xGridPoint - chargeX, 2) + pow(yGridPoint - chargeY, 2));
     
     //printf("Grid Point (%d, %d) -> (%.2f, %.2f)\n", Px, Py, xGridPoint, yGridPoint); <-- Save for printing in case of error
     
-    return (coul * chargeMag)/distanceToCharge;
+    return (coul * chargeMag) / (distanceToCharge + 1e-9);
 }
 
 /**
@@ -91,10 +91,10 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
     int distances[4];
     
     // calculate distances toward each wall
-    int toRightWall = (Nx - Cx);
+    int toRightWall = (Nx - 1 - Cx);
     int toLeftWall = Cx;
     int toTopWall = Cy;
-    int toBottomWall = (Ny - Cy);
+    int toBottomWall = (Ny - 1 - Cy);
     
     // assign distance values to index of direction
     distances[0] = toTopWall;
@@ -136,6 +136,13 @@ void renderEqLines(int Cx, int Cy) {
     int distanceToWall = findFurthestWall(Cx, Cy, 0); // gather the VALUE of the distance
     
     int lineCount = distanceToWall / lineInc;
+    
+    // check line count value before calculation and allocation
+    if (lineCount <= 0) {
+        printf("Error: Not enough space to compute equipotential lines.\n");
+        return;
+    }
+    
     double *lineData = (double *)malloc(lineCount * sizeof(double));
     if (lineData == NULL) {
         fprintf(stderr, "Memory allocation failed for lineData\n");
