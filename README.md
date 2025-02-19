@@ -8,6 +8,7 @@ Currently, this project does not have an installation option, as it is in its ea
 
 To compile and run:
 - Navigate to the project directory
+- Replace `"./eqLinesRendered.png"` with desired file path for the rendered image
 - Use `gcc main.c -o equipotential -lm` to compile (assuming you use math functions)
 - Run `./equipotential`
 
