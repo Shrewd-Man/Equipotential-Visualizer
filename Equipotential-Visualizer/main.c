@@ -15,13 +15,14 @@
 #define Ymin -5.0
 #define Ymax 5.0
 
-// define the resolution (points) of the simulation within the boundries
-#define Nx 1000
-#define Ny 1000
+// define the resolution (points) of the simulation within the boundries and the increments of the lines to render
+#define Nx 100
+#define Ny 100
+#define lineInc 10
 
 // define the placement and magnitude of the point charge
-#define chargeX 0
-#define chargeY 0
+#define chargeX 15
+#define chargeY 30
 #define chargeMag (1.062e-19)
 
 // define coulombs constant
@@ -42,7 +43,7 @@ double dy = (Ymax - Ymin) / (Ny - 1);
  *
  *  @return Func returns the value of the potential difference at the given point
  *
- *  @note The function currently assumes there is only one charge present at (0,0) with magnitude e
+ *  @note The function currently assumes there is only one charge present at (0,0) with magnitude e based on the constants defined above
  */
 double calcVolt(int Px, int Py) {
     
@@ -56,7 +57,13 @@ double calcVolt(int Px, int Py) {
     return (coul * chargeMag)/distanceToCharge;
 }
 
-// The setupGrid function loops through each element in the 2d array and calculates the potential difference of the point
+/**
+ *  @brief Function calculates the potential difference of every point in the matrix
+ *
+ *  The function calls the calcVolt for every point in the space
+ *
+ *  @note This function is currently a temporary system that does not allow for live rendering
+ */
 void setupGrid(void) {
     for (int i = 0; i < Nx; i++) {
         for (int j = 0; j < Ny; j++) {
@@ -65,20 +72,39 @@ void setupGrid(void) {
     }
 }
 
+/**
+ *  @brief calculates either the distance to the wall or the direction of the furthest wall based on the given point
+ *
+ *  @param Cx The point-x position of the point of reference
+ *  @param Cy The point-y postition of the point of reference
+ *  @param indexReq The index requested boolean. decides which value is returned
+ *
+ *  @return Based on indexReq, the function either returns the distance to the furthest wall or the direction of the furthest wall
+ *
+ *  @note for directions, the index of the array is used as the return value. The following is true:
+ *      - 0: Upwards
+ *      - 1: Downwards
+ *      - 2: Right
+ *      - 3: Left
+ */
 int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest from the charge
     int distances[4];
+    
+    // calculate distances toward each wall
     int toRightWall = (Nx - Cx);
     int toLeftWall = Cx;
     int toTopWall = Cy;
     int toBottomWall = (Ny - Cy);
     
+    // assign distance values to index of direction
     distances[0] = toTopWall;
     distances[1] = toBottomWall;
     distances[2] = toRightWall;
     distances[3] = toLeftWall;
     
-    int maxIndex = 1;
-    for (int i = 2; i <= 4; i++) {
+    // use linear search to find index of furthest wall
+    int maxIndex = 0;
+    for (int i = 1; i <= 3; i++) {
         if (distances[i] > distances[maxIndex]) {
             maxIndex = i;
         }
@@ -109,21 +135,47 @@ void renderEqLines(int Cx, int Cy) {
     int directionToFurthestWall = findFurthestWall(Cx, Cy, 1); // gather the direction of the distance
     int distanceToWall = findFurthestWall(Cx, Cy, 0); // gather the VALUE of the distance
     
-    int n = distanceToWall / 25;
-    double *lineData = (double *)malloc(n * sizeof(double));
+    int lineCount = distanceToWall / lineInc;
+    double *lineData = (double *)malloc(lineCount * sizeof(double));
+    if (lineData == NULL) {
+        fprintf(stderr, "Memory allocation failed for lineData\n");
+        return;
+    }
+    
+    for (int i = 0; i < lineCount; i++) {
+        switch (directionToFurthestWall) { // use direction to fill in calues every 25 pts
+            case 0: // up
+                lineData[i] = V[Cx][Cy + (i * lineInc)];
+                break;
+            case 1: // down
+                lineData[i] = V[Cx][Cy - (i * lineInc)];
+                break;
+            case 2: // right
+                lineData[i] = V[Cx + (i * lineInc)][Cy];
+                break;
+            case 3: // left
+                lineData[i] = V[Cx - (i * lineInc)][Cy];
+                break;
+            default:
+                printf("Error analyzing value of direction %d", directionToFurthestWall);
+                break;
+        }
+    }
+    
+    printf("Progress check.\nLineData:\n");
+    for (int i = 0; i < lineCount; i++) {
+        printf("\n  %d: %.2e", i, lineData[i]);
+    }
+    printf("\nCharge (%d, %d) is furthest from wall %d, and is %d points away.\n", chargeX, chargeY, directionToFurthestWall, distanceToWall);
     
     free(lineData);
 }
 
 int main(int argc, const char * argv[]) {
-    int Cx, Cy;
-    
-    Cx = 50;
-    Cy = 50;
     
     setupGrid();
     
-    renderEqLines(Cx, Cy);
+    renderEqLines(chargeX, chargeY);
     
     return 0;
 }
