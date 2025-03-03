@@ -146,6 +146,12 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
 
 // render
 void renderEqLines(int Cx, int Cy) {
+
+    /* NOTE: The "Distance to wall" method will not work when implementing multiple charges. 
+    Instead, it may be easier to calculate a potential difference a fixed distance away, 
+    and then increment that value for rendering all of the lines instead of calculating the difference of certain points that fall on a ray.
+    */
+
     printf("Pass\n");
     
     // Use 0 for up, 1 for down, 2 for right, and 3 for left
