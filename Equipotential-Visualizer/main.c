@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
@@ -23,14 +24,18 @@
 #define lineInc 50
 
 // define the placement and magnitude of the point charge using points as opposed to spacial position
-#define chargeX 500
-#define chargeY 500
-#define chargeMag (1.0e-6)  // 1 microcoulomb
+//#define chargeX 500
+//#define chargeY 500
+//#define chargeMag (1.0e-6)  // 1 microcoulomb
 
 // define coulombs constant
 #define coul (8.99e9)
 
 // Initialize 2 dimensional array and the "dx & dy" values.
+double chargeXSpace;
+double chargeYSpace;
+double chargeSize;
+
 double V[Nx][Ny];
 double dx = (Xmax - Xmin) / (Nx - 1);
 double dy = (Ymax - Ymin) / (Ny - 1);
@@ -42,24 +47,26 @@ double dy = (Ymax - Ymin) / (Ny - 1);
  *
  *  @param Px is the given point x value of the place to compute the difference
  *  @param Py is the given point y value of the place to compute the difference
+ *  @param Cx is the charge spacial x value
+ *  @param Cy is the charge spacial y value
  *
  *  @return Func returns the value of the potential difference at the given point
  *
  *  @note The function currently assumes there is only one charge present at (0,0) with magnitude e based on the constants defined above
  */
-double calcVolt(int Px, int Py) {
+double calcVolt(int Px, int Py, double Cx, double Cy, double chargeSize) {
     
     double xGridPoint = Xmin + Px * dx;
     double yGridPoint = Ymin + Py * dy;
     
-    double chargeX_phys = Xmin + chargeX * dx;
-    double chargeY_phys = Ymin + chargeY * dy;
+    // double chargeX_phys = Xmin + chargeX * dx;
+    // double chargeY_phys = Ymin + chargeY * dy;
 
-    double distanceToCharge = sqrt(pow(xGridPoint - chargeX_phys, 2) + pow(yGridPoint - chargeY_phys, 2));
+    double distanceToCharge = sqrt(pow(xGridPoint - Cx, 2) + pow(yGridPoint - Cy, 2));
     
     //printf("Grid Point (%d, %d) -> (%.2f, %.2f)\n", Px, Py, xGridPoint, yGridPoint); <-- Save for printing in case of error
     
-    return (coul * chargeMag) / (distanceToCharge + 1e-9);
+    return (coul * chargeSize) / (distanceToCharge + 1e-9);
 }
 
 /**
@@ -69,10 +76,10 @@ double calcVolt(int Px, int Py) {
  *
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
-void setupGrid(void) {
+void setupGrid(double Cx, double Cy, double chargeSize) {
     for (int i = 0; i < Nx; i++) {
         for (int j = 0; j < Ny; j++) {
-            V[i][j] = calcVolt(i, j); // Use to calculate the difference
+            V[i][j] = calcVolt(i, j, Cx, Cy, chargeSize); // Use to calculate the difference
         }
     }
 }
@@ -133,8 +140,8 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
  *  - For each ring, the function computes the potential at specific points along the line from the charge to the wall at intervals defined by the increment. These potential values are stored in the array, representing the voltage at each ring's position.
  *  - The function then generates a PNG image where points with a potential that matches one of the calculated ring values (within some tolerance) are colored white. These points form the equipotential lines or "rings". All other points are colored black.
  *
- *  @param Cx the x location of the charge
- *  @param Cy the y position of the charge
+ *  @param Cx the point-x location of the charge
+ *  @param Cy the point-y position of the charge
  */
 
 // render
@@ -185,7 +192,7 @@ void renderEqLines(int Cx, int Cy) {
     for (int i = 0; i < lineCount; i++) {
         printf("\n  %d: %.2e", i, lineData[i]);
     }
-    printf("\nCharge (%d, %d) is furthest from wall %d, and is %d points away.\n", chargeX, chargeY, directionToFurthestWall, distanceToWall);
+    printf("\nCharge (%d, %d) is furthest from wall %d, and is %d points away.\n", Cx, Cy, directionToFurthestWall, distanceToWall);
     
     // create a base for the grace value to get consistent lines
     double graceBase = 250;
@@ -211,20 +218,43 @@ void renderEqLines(int Cx, int Cy) {
     }
     
     // set the charge point to a white pixel
-    img[chargeX][chargeY] = 255; // White
+    img[Cx][Cy] = 255; // White
     
     // send the image (Replace with desired file location)
-    stbi_write_png("./eqLinesRendered.png", Nx, Ny, 1, img, Nx);
+    stbi_write_png("/Users/Kenneth/Desktop/eqLinesInput.png", Nx, Ny, 1, img, Nx);
     free(lineData);
 }
 
 int main(int argc, const char * argv[]) {
     
+    double chargeXSpace;
+    double chargeYSpace;
+    double chargeSize;
+    char strIn[2];
+    
+    printf("Enter the charge X: ");
+    scanf("%lf", &chargeXSpace);
+    printf("Enter the charge Y: ");
+    scanf("%lf", &chargeYSpace);
+    printf("Enter charge size (enter x to default to one positive microcoulomb and -x to default to one negative microcoulomb): ");
+    scanf("%s", strIn);
+    
+    if(strcmp(strIn, "x") == 0) {
+        chargeSize = (1.0e-6);
+    } else if (strcmp(strIn, "-x") == 0) {
+        chargeSize = (-1.0e-6);
+    } else {
+        chargeSize = atof(strIn);
+    }
+    
+    int chargeXPoint = (int)((chargeXSpace - Xmin) / dx + 0.5);
+    int chargeYPoint = (int)((chargeYSpace - Ymin) / dy + 0.5);
+    
     // calculate all ∆V values
-    setupGrid();
+    setupGrid(chargeXSpace, chargeYSpace, chargeSize);
     
     // render the image
-    renderEqLines(chargeX, chargeY);
+    renderEqLines(chargeXPoint, chargeYPoint);
     
     // exit the program
     return 0;
