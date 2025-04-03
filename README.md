@@ -4,7 +4,7 @@
 I started this project to challenge myself and improve my C skills. The goal is to create a program that allows a user to visualize the interactions of electrostatic fields caused by point charges in space.
 
 ## Installation
-Currently, this project does not have an installation option, as it is in its early stages of development. The code can be viewed in the "Equipotential-Visualizer/Equipotential-Visualizer/main.c" file.
+Currently, this project does not have an installation option, as it is in its early stages of development. The code can be viewed in the `Equipotential-Visualizer/Equipotential-Visualizer/main.c` file.
 
 To compile and run:
 - Navigate to the project directory
