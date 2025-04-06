@@ -13,13 +13,13 @@
 #include "stb_image_write.h"
 
 // define the spacial boundries of the simulation
-#define Xmin -5.0
-#define Xmax 5.0
+#define Xmin -10.0
+#define Xmax 10.0
 #define Ymin -5.0
 #define Ymax 5.0
 
 // define the resolution (points) of the simulation within the boundries and the increments of the lines to render
-#define Nx 1000
+#define Nx 2000
 #define Ny 1000
 #define lineInc 50
 
@@ -30,11 +30,6 @@
 
 // define coulombs constant
 #define coul (8.99e9)
-
-// Initialize 2 dimensional array and the "dx & dy" values.
-double chargeXSpace;
-double chargeYSpace;
-double chargeSize;
 
 double V[Nx][Ny];
 double dx = (Xmax - Xmin) / (Nx - 1);
@@ -73,6 +68,8 @@ double calcVolt(int Px, int Py, double Cx, double Cy, double chargeSize) {
  *  @brief Function calculates the potential difference of every point in the matrix
  *
  *  The function calls the calcVolt for every point in the space
+ *  @param Cx the spatial x coordinate of the charge
+ *  @param Cy the spatial y coordinate of the charge
  *
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
@@ -204,10 +201,10 @@ void renderEqLines(int Cx, int Cy) {
     double graceBase = 250;
     
     // create the img array in B&W
-    unsigned char img[Nx][Ny];
+    unsigned char img[Ny][Nx];
     for (int i = 0; i < Nx; i++) {
         for (int j = 0; j < Ny; j++) {
-            img[i][j] = 0;  // Black background
+            img[j][i] = 0;  // Black background
         }
     }
     
@@ -217,17 +214,17 @@ void renderEqLines(int Cx, int Cy) {
             for (int k = 0; k < lineCount; k++) {
                 double grace = graceBase / ((k + 1) * (k + 1));
                 if(fabs(V[i][j] - lineData[k]) < grace) {
-                    img[i][j] = 255;  // White
+                    img[j][i] = 255;  // White
                 }
             }
         }
     }
     
     // set the charge point to a white pixel
-    img[Cx][Cy] = 255; // White
+    img[Cy][Cx] = 255; // White
     
     // send the image (Replace with desired file location)
-    stbi_write_png("/Users/Kenneth/Desktop/eqLinesInput.png", Nx, Ny, 1, img, Nx);
+    stbi_write_png("./eqLinesInput.png", Nx, Ny, 1, img, Nx);
     free(lineData);
 }
 
