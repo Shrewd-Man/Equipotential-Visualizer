@@ -151,6 +151,9 @@ double findVoltageExtrema(int type) {
  *  - The function first determines the maximum and minimum voltage in the space
  *  - Then a predetermined voltage incrementation is used to generate equipotential contours
  *  - For every point (i, j), check if V[i][j] is close to any of those threshold voltages, and render each pixel white or black
+ *
+ * @param Cx the point-x location of the charge
+ * @param Cy the point-y position of the charge
  */
 void renderVoltageBased(int Cx, int Cy) {
     printf("Starting beginning extrema sequence...\n");
