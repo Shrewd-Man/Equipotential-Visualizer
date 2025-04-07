@@ -1,4 +1,4 @@
-// test
+//
 //  main.c
 //  Equipotential-Visualizer
 //
@@ -26,6 +26,11 @@
 
 // define coulombs constant
 #define coul (8.99e9)
+
+struct charge {
+    double spaceX, spaceY, magnitude;
+    int pointX, pointY;
+};
 
 double V[Nx][Ny];
 double dx = (Xmax - Xmin) / (Nx - 1);
@@ -296,34 +301,32 @@ void renderEqLines(int Cx, int Cy) {
 
 int main(int argc, const char * argv[]) {
     
-    double chargeXSpace;
-    double chargeYSpace;
-    double chargeSize;
+    struct charge charge1;
     char strIn[2];
     
     printf("Enter the charge X: ");
-    scanf("%lf", &chargeXSpace);
+    scanf("%lf", &charge1.spaceX);
     printf("Enter the charge Y: ");
-    scanf("%lf", &chargeYSpace);
+    scanf("%lf", &charge1.spaceY);
     printf("Enter charge size (enter x to default to one positive microcoulomb and -x to default to one negative microcoulomb): ");
     scanf("%s", strIn);
     
     if(strcmp(strIn, "x") == 0) {
-        chargeSize = (1.0e-6);
+        charge1.magnitude = (1.0e-6);
     } else if (strcmp(strIn, "-x") == 0) {
-        chargeSize = (-1.0e-6);
+        charge1.magnitude = (-1.0e-6);
     } else {
-        chargeSize = atof(strIn);
+        charge1.magnitude = atof(strIn);
     }
     
-    int chargeXPoint = (int)((chargeXSpace - Xmin) / dx + 0.5);
-    int chargeYPoint = (int)((chargeYSpace - Ymin) / dy + 0.5);
+    charge1.pointX = (int)((charge1.spaceX - Xmin) / dx + 0.5);
+    charge1.pointY = (int)((charge1.spaceY - Ymin) / dy + 0.5);
     
     // calculate all ∆V values
-    setupGrid(chargeXSpace, chargeYSpace, chargeSize);
+    setupGrid(charge1.spaceX, charge1.spaceY, charge1.magnitude);
     
     // render the image
-    renderVoltageBased(chargeXPoint, chargeYPoint);
+    renderVoltageBased(charge1.pointX, charge1.pointY);
     
     // exit the program
     return 0;
