@@ -22,6 +22,7 @@
 #define Nx 2000
 #define Ny 1000
 #define lineInc 50
+#define voltInc 15 // define the voltage increment (15 volts for now i'll tweak as needed)
 
 // define the placement and magnitude of the point charge using points as opposed to spacial position
 //#define chargeX 500
@@ -126,6 +127,83 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
         return distances[maxIndex];
     }
 }
+/**
+ * @brief function finds the minimum and maximum voltage in the space, and returns either min or max
+ *
+ * @param type indicates return; 1 for max, 0 for min
+ */
+double findVoltageExtrema(int type) {
+    double Vmin = V[0][0], Vmax = V[0][0]; // create min and max variables
+    // use a for loop to calculate values
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            if (V[i][j] < Vmin) Vmin = V[i][j];
+            if (V[i][j] > Vmax) Vmax = V[i][j];
+            //printf("%.2f is min\n %.2f is max\n\n", Vmin, Vmax);
+        }
+    }
+    return type ? Vmax : Vmin; // return value based on type
+}
+/**
+ * @brief This function approaches the rendering by using the voltage of the space
+ *
+ * The function performs as follows:
+ *  - The function first determines the maximum and minimum voltage in the space
+ *  - Then a predetermined voltage incrementation is used to generate equipotential contours
+ *  - For every point (i, j), check if V[i][j] is close to any of those threshold voltages, and render each pixel white or black
+ *
+ * @param Cx the point-x location of the charge
+ * @param Cy the point-y position of the charge
+ */
+void renderVoltageBased(int Cx, int Cy) {
+    printf("Starting beginning extrema sequence...\n");
+    
+    int numLines = 15;
+
+    // Find global voltage extrema across the field
+    double Vmin = findVoltageExtrema(0);
+    double Vmax = findVoltageExtrema(1);
+    double invMin = 1.0 / Vmax; // corresponds to high voltage (closer to charge)
+    double invMax = 1.0 / Vmin; // corresponds to low voltage (farther out)
+    
+    if (Vmin < 1e-6) Vmin = 1e-6;
+
+    // Avoid log(0) or negative values
+    //double logMin = log10(Vmin + 1e-9);
+    //double logMax = log10(Vmax);
+    
+    printf("Sequence succeeded. Rendering %d voltage lines...\n", numLines);
+
+    // Create the image
+    unsigned char img[Ny][Nx];
+    for (int i = 0; i < Nx; i++) {
+        for (int j = 0; j < Ny; j++) {
+            img[j][i] = 0;  // Black background
+        }
+    }
+
+    // Loop over log-spaced voltage targets
+    for (int k = 0; k < numLines; k++) {
+            double invTarget = invMin + (invMax - invMin) * k / (numLines - 1);
+            double target = 1.0 / invTarget;
+            double tol = 0.0005 * target; // or tune this a bit
+
+            for (int i = 0; i < Nx; i++) {
+                for (int j = 0; j < Ny; j++) {
+                    double Vhere = V[i][j];
+                    if (fabs(Vhere - target) < tol) {
+                        img[j][i] = 255;
+                    }
+                }
+            }
+        }
+
+    // Set the charge position to a white dot
+    img[Cy][Cx] = 255;
+
+    // Write the image to disk
+    stbi_write_png("./eqLinesInput.png", Nx, Ny, 1, img, Nx);
+}
 
 /**
  *  @brief The function creates a png image of the rendered eq lines
@@ -140,8 +218,6 @@ int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest f
  *  @param Cx the point-x location of the charge
  *  @param Cy the point-y position of the charge
  */
-
-// render
 void renderEqLines(int Cx, int Cy) {
 
     /* NOTE: The "Distance to wall" method will not work when implementing multiple charges. 
@@ -257,7 +333,7 @@ int main(int argc, const char * argv[]) {
     setupGrid(chargeXSpace, chargeYSpace, chargeSize);
     
     // render the image
-    renderEqLines(chargeXPoint, chargeYPoint);
+    renderVoltageBased(chargeXPoint, chargeYPoint);
     
     // exit the program
     return 0;
