@@ -202,7 +202,7 @@ void renderVoltageBased(int Cx, int Cy) {
     img[Cy][Cx] = 255;
 
     // Write the image to disk
-    stbi_write_png("/Users/Kenneth/Desktop/eqLinesInput.png", Nx, Ny, 1, img, Nx);
+    stbi_write_png("./eqLinesInput.png", Nx, Ny, 1, img, Nx);
 }
 
 /**
