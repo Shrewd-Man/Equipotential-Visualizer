@@ -12,22 +12,17 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-// define the spacial boundries of the simulation
+// define the spacial boundaries of the simulation
 #define Xmin -10.0
 #define Xmax 10.0
 #define Ymin -5.0
 #define Ymax 5.0
 
-// define the resolution (points) of the simulation within the boundries and the increments of the lines to render
+// define the resolution (points) of the simulation within the boundaries and the increments of the lines to render
 #define Nx 2000
 #define Ny 1000
 #define lineInc 50
-#define voltInc 15 // define the voltage increment (15 volts for now i'll tweak as needed)
-
-// define the placement and magnitude of the point charge using points as opposed to spacial position
-//#define chargeX 500
-//#define chargeY 500
-//#define chargeMag (1.0e-6)  // 1 microcoulomb
+#define voltInc 15 // define the voltage increment (15 volts for now I'll tweak as needed)
 
 // define coulombs constant
 #define coul (8.99e9)
@@ -39,7 +34,7 @@ double dy = (Ymax - Ymin) / (Ny - 1);
 /**
  *  @brief Function calculates the potential difference of any provided point
  *
- *  The function uses the universal formula and currently computes that based on the points distance to (0,0), assuming theres a charge with e at (0,0)
+ *  The function uses the universal formula and currently computes that based on the points distance to the charge x and y
  *
  *  @param Px is the given point x value of the place to compute the difference
  *  @param Py is the given point y value of the place to compute the difference
@@ -47,16 +42,11 @@ double dy = (Ymax - Ymin) / (Ny - 1);
  *  @param Cy is the charge spacial y value
  *
  *  @return Func returns the value of the potential difference at the given point
- *
- *  @note The function currently assumes there is only one charge present at (0,0) with magnitude e based on the constants defined above
  */
 double calcVolt(int Px, int Py, double Cx, double Cy, double chargeSize) {
     
     double xGridPoint = Xmin + Px * dx;
     double yGridPoint = Ymin + Py * dy;
-    
-    // double chargeX_phys = Xmin + chargeX * dx;
-    // double chargeY_phys = Ymin + chargeY * dy;
 
     double distanceToCharge = sqrt(pow(xGridPoint - Cx, 2) + pow(yGridPoint - Cy, 2));
     
