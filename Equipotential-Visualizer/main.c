@@ -1,4 +1,4 @@
-// test
+//
 //  main.c
 //  Equipotential-Visualizer
 //
@@ -21,8 +21,10 @@
 // define the resolution (points) of the simulation within the boundaries and the increments of the lines to render
 #define Nx 2000
 #define Ny 1000
-#define lineInc 50
-#define voltInc 15 // define the voltage increment (15 volts for now I'll tweak as needed)
+
+// Line increment values
+#define lineInc 50 // used in the ray-based rendering (Legacy)
+#define voltInc 15 // used in the newer, voltage based rendering
 
 // define coulombs constant
 #define coul (8.99e9)
