@@ -205,7 +205,7 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
     }
 
     // Write the image to disk
-    stbi_write_png("./eqLinesInput.png", Nx, Ny, 1, img, Nx);
+    stbi_write_png("./eqLinesRendered.png", Nx, Ny, 1, img, Nx);
 }
 
 int main(int argc, const char * argv[]) {
