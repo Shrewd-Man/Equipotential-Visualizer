@@ -205,7 +205,13 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
     }
 
     // Write the image to disk
-    stbi_write_png("./eqLinesRendered.png", Nx, Ny, 1, img, Nx);
+    char filePath[32];
+    printf("Enter path for image (include filename & .png extension, type 'x' for default [./eqLinesRendered.png]): ");
+    scanf("%s", filePath);
+    if(strcmp(filePath, "x")){
+        filePath = "./eqLinesRendered.png";
+    }
+    stbi_write_png(filePath, Nx, Ny, 1, img, Nx);
 }
 
 int main(int argc, const char * argv[]) {
