@@ -11,3 +11,9 @@ build/
 
 # vsCode
 *.vscode
+
+# Build output
+main
+*.o
+*.dSYM/
+*.exe
