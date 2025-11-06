@@ -8,10 +8,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "stb_image_write.h"
 #include "config.h"
 #include "charge.h"
+#include "render.h"
 
 double V[NX][NY];
 double dx = (XMAX - XMIN) / (NX - 1);
@@ -70,7 +71,7 @@ void setupGrid(charge_t charge[], int chargeCount) {
  *
  * @param type indicates return; 1 for max, 0 for min
  */
-double findVoltageExtrema(int type) {
+/*double findVoltageExtrema(int type) {
     double Vmin = V[0][0], Vmax = V[0][0]; // create min and max variables
     // use a for loop to calculate values
     for (int i = 0; i < NX; i++) {
@@ -81,7 +82,7 @@ double findVoltageExtrema(int type) {
         }
     }
     return type ? Vmax : Vmin; // return value based on type
-}
+} */
 /**
  * @brief This function approaches the rendering by using the voltage of the space
  *
@@ -93,7 +94,7 @@ double findVoltageExtrema(int type) {
  *  @param charge the structure containing the data for the first charge
  *  @param chargeCount the total amounts of charges
  */
-void renderVoltageBased(charge_t charge[], int chargeCount) {
+/* void renderVoltageBased(charge_t charge[], int chargeCount) {
     printf("Starting beginning extrema sequence...\n");
     
     int numLines = 15;
@@ -145,7 +146,7 @@ void renderVoltageBased(charge_t charge[], int chargeCount) {
 
     // Write the image to disk
     stbi_write_png("/Users/kenny/Desktop/eqLinesRendered.png", NX, NY, 1, img, NX);
-}
+} */
 
 int main(int argc, const char * argv[]) {
     
@@ -198,7 +199,7 @@ int main(int argc, const char * argv[]) {
     
     // render the image
     printf("Rendering...\n");
-    renderVoltageBased(charge, chargeCount);
+    renderVoltageBased(charge, chargeCount, V);
     printf("Rendering Complete.\n\n");
     
     // exit the program
