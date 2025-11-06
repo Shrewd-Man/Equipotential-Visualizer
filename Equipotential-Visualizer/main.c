@@ -11,16 +11,12 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 #include "config.h"
-//#include "charge.h"
-
-struct charge {
-    double spaceX, spaceY, magnitude;
-    int pointX, pointY;
-};
+#include "charge.h"
 
 double V[NX][NY];
 double dx = (XMAX - XMIN) / (NX - 1);
 double dy = (YMAX - YMIN) / (NY - 1);
+
 
 /**
  *  @brief Function calculates the potential difference of any provided point
@@ -34,13 +30,18 @@ double dy = (YMAX - YMIN) / (NY - 1);
  *
  *  @return Func returns the value of the potential difference at the given point
  */
-double calcVolt(struct charge charge[], int chargeCount, int xGrid, int yGrid) {
+double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
     double xPhys = XMIN + xGrid * dx;
     double yPhys = YMIN + yGrid * dy;
     double potential = 0.0;
     for (int i = 0; i < chargeCount; i++) {
         double distanceToCharge = sqrt(pow(xPhys - charge[i].spaceX, 2) + pow(yPhys - charge[i].spaceY, 2));
-        potential += (coul * charge[i].magnitude) / (distanceToCharge + 1e-9);
+        if(charge[i].sign == 1){
+            potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distanceToCharge + 1e-9);
+        } else {
+            potential += (COULOMBS_CONSTANT * (0 - charge[i].magnitude)) / (distanceToCharge + 1e-9);
+        }
+        //potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distanceToCharge + 1e-9);
     }
     return potential;
 }
@@ -54,7 +55,7 @@ double calcVolt(struct charge charge[], int chargeCount, int xGrid, int yGrid) {
  *
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
-void setupGrid(struct charge charge[], int chargeCount) {
+void setupGrid(charge_t charge[], int chargeCount) {
     for (int i = 0; i < NX; i++) {
         for (int j = 0; j < NY; j++) {
             V[i][j] = calcVolt(charge, chargeCount, i, j); // Use to calculate the difference
@@ -92,7 +93,7 @@ double findVoltageExtrema(int type) {
  *  @param charge the structure containing the data for the first charge
  *  @param chargeCount the total amounts of charges
  */
-void renderVoltageBased(struct charge charge[], int chargeCount) {
+void renderVoltageBased(charge_t charge[], int chargeCount) {
     printf("Starting beginning extrema sequence...\n");
     
     int numLines = 15;
@@ -143,13 +144,13 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
     }
 
     // Write the image to disk
-    stbi_write_png("./eqLinesRendered.png", NX, NY, 1, img, NX);
+    stbi_write_png("/Users/kenny/Desktop/eqLinesRendered.png", NX, NY, 1, img, NX);
 }
 
 int main(int argc, const char * argv[]) {
     
     // create array of 4 charges
-    struct charge charge[4];
+    charge_t charge[4];
     
     // Create an int to define the amount of charges the user has requested
     int chargeCount;
@@ -167,14 +168,16 @@ int main(int argc, const char * argv[]) {
             scanf("%lf", &charge[i].spaceX);
             printf("Enter the charge Y: ");
             scanf("%lf", &charge[i].spaceY);
-            printf("Enter the charge size (enter x to default to one positive microcoulomb and -x to default to one negative microcoulomb): ");
+            printf("Enter the charge size (enter x to default to one positive microcoulomb and z to default to one negative microcoulomb): ");
             scanf("%s", strIn);
             
             // compare string and assign auto-values as needed
             if(strcmp(strIn, "x") == 0) {
-                charge[i].magnitude = (1.0e-6); // one +microcoulomb
-            } else if (strcmp(strIn, "-x") == 0) {
-                charge[i].magnitude = (-1.0e-6); // 1 -microcoulomb
+                charge[i].magnitude = (1.0e-6); // 1 microcoulomb
+                charge[i].sign = POSITIVE;
+            } else if (strcmp(strIn, "z") == 0) {
+                charge[i].magnitude = (1.0e-6); // 1 microcoulomb
+                charge[i].sign = NEGATIVE;
             } else {
                 charge[i].magnitude = atof(strIn); // input
             }

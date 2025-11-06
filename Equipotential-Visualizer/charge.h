@@ -7,10 +7,10 @@
 typedef enum {
     NEGATIVE = 0,
     POSITIVE = 1
-} chargeSign;
+} sign_t;
 
 // --- Charge Structure ---
-typedef struct charge {
+typedef struct charge_t {
     double spaceX;  /* Meters */
     double spaceY;  /* Meters */
 
@@ -19,7 +19,7 @@ typedef struct charge {
 
     double magnitude; /* Coulombs */
 
-    chargeSign sign; /* 0 for negative, 1 for positive */
-} charge;
+    sign_t sign; /* 0 for negative, 1 for positive */
+} charge_t;
 
-#endif CHARGE_H
+#endif //CHARGE_H

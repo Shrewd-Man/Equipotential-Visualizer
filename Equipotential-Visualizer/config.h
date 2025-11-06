@@ -23,7 +23,7 @@
 // --- CONSTANTS ---
 
     // Coulombs Constant
-#define coul (8.99e9)
+#define COULOMBS_CONSTANT (8.99e9)
 
 
 #endif
