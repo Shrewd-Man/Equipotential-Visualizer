@@ -7,26 +7,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
-
-// define the spacial boundaries of the simulation
-#define Xmin -10.0
-#define Xmax 10.0
-#define Ymin -5.0
-#define Ymax 5.0
-
-// define the resolution (points) of the simulation within the boundaries
-#define Nx 2000
-#define Ny 1000
-
-// Line increment values
-#define voltInc 15 // used in the newer, voltage based rendering
-
-// define coulombs constant
-#define coul (8.99e9)
+#include "config.h"
 
 struct charge {
     double spaceX, spaceY, magnitude;
@@ -34,8 +18,8 @@ struct charge {
 };
 
 double V[Nx][Ny];
-double dx = (Xmax - Xmin) / (Nx - 1);
-double dy = (Ymax - Ymin) / (Ny - 1);
+double dx = (XMAX - XMIN) / (Nx - 1);
+double dy = (YMAX - YMIN) / (Ny - 1);
 
 /**
  *  @brief Function calculates the potential difference of any provided point
@@ -50,8 +34,8 @@ double dy = (Ymax - Ymin) / (Ny - 1);
  *  @return Func returns the value of the potential difference at the given point
  */
 double calcVolt(struct charge charge[], int chargeCount, int xGrid, int yGrid) {
-    double xPhys = Xmin + xGrid * dx;
-    double yPhys = Ymin + yGrid * dy;
+    double xPhys = XMIN + xGrid * dx;
+    double yPhys = YMIN + yGrid * dy;
     double potential = 0.0;
     for (int i = 0; i < chargeCount; i++) {
         double distanceToCharge = sqrt(pow(xPhys - charge[i].spaceX, 2) + pow(yPhys - charge[i].spaceY, 2));
@@ -195,8 +179,8 @@ int main(int argc, const char * argv[]) {
             }
             
             // assign and set the point coordinates of the charges based on the spatial coordinates
-            charge[i].pointX = (int)((charge[i].spaceX - Xmin) / dx + 0.5);
-            charge[i].pointY = (int)((charge[i].spaceY - Ymin) / dy + 0.5);
+            charge[i].pointX = (int)((charge[i].spaceX - XMAX) / dx + 0.5);
+            charge[i].pointY = (int)((charge[i].spaceY - YMIN) / dy + 0.5);
         }
     } else {
         printf("Next time, choose a proper value. Terminating sesh.");
