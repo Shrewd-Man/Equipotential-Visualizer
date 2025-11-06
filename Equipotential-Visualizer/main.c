@@ -18,12 +18,11 @@
 #define Ymin -5.0
 #define Ymax 5.0
 
-// define the resolution (points) of the simulation within the boundaries and the increments of the lines to render
+// define the resolution (points) of the simulation within the boundaries
 #define Nx 2000
 #define Ny 1000
 
 // Line increment values
-#define lineInc 50 // used in the ray-based rendering (Legacy)
 #define voltInc 15 // used in the newer, voltage based rendering
 
 // define coulombs constant
@@ -78,52 +77,6 @@ void setupGrid(struct charge charge[], int chargeCount) {
                 printf("V[%d][%d] = %.2e\n", i, j, V[i][j]);
             }
         }
-    }
-}
-
-/**
- *  @brief calculates either the distance to the wall or the direction of the furthest wall based on the given point
- *
- *  @param Cx The point-x position of the point of reference
- *  @param Cy The point-y postition of the point of reference
- *  @param indexReq The index requested boolean. decides which value is returned
- *
- *  @return Based on indexReq, the function either returns the distance to the furthest wall or the direction of the furthest wall
- *
- *  @note for directions, the index of the array is used as the return value. The following is true:
- *      - 0: Upwards
- *      - 1: Downwards
- *      - 2: Right
- *      - 3: Left
- */
-int findFurthestWall(int Cx, int Cy, int indexReq) { // find the wall furthest from the charge
-    int distances[4];
-    
-    // calculate distances toward each wall
-    int toRightWall = (Nx - 1 - Cx);
-    int toLeftWall = Cx;
-    int toTopWall = Cy;
-    int toBottomWall = (Ny - 1 - Cy);
-    
-    // assign distance values to index of direction
-    distances[0] = toTopWall;
-    distances[1] = toBottomWall;
-    distances[2] = toRightWall;
-    distances[3] = toLeftWall;
-    
-    // use linear search to find index of furthest wall
-    int maxIndex = 0;
-    for (int i = 1; i <= 3; i++) {
-        if (distances[i] > distances[maxIndex]) {
-            maxIndex = i;
-        }
-    }
-    
-    // return value based on indexReq
-    if(indexReq) {
-        return maxIndex;
-    } else {
-        return distances[maxIndex];
     }
 }
 /**
@@ -217,7 +170,7 @@ int main(int argc, const char * argv[]) {
     int chargeCount;
     
     // create an input variable
-    char strIn[2];
+    char strIn[32];
     
     printf("Enter the amount of charges: ");
     scanf("%d", &chargeCount);
@@ -254,13 +207,11 @@ int main(int argc, const char * argv[]) {
     printf("Setting up...\n");
     setupGrid(charge, chargeCount);
     printf("Setup Complete.\n\n");
-    //setupGrid(charge1.spaceX, charge1.spaceY, charge1.magnitude);
     
     // render the image
     printf("Rendering...\n");
     renderVoltageBased(charge, chargeCount);
     printf("Rendering Complete.\n\n");
-    //renderVoltageBased(charge1.pointX, charge1.pointY);
     
     // exit the program
     return 0;
