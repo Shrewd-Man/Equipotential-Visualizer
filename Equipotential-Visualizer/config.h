@@ -8,14 +8,14 @@
 // --- SIMULATION PARAMETERS ---
 
     // Boundaries
-#define XMIN -10.0
-#define XMAX 10.0
-#define YMIN -5.0
-#define YMAX 5.0
+#define XMIN -10.0 /* Meters */
+#define XMAX 10.0  /* Meters */
+#define YMIN -5.0  /* Meters */
+#define YMAX 5.0   /* Meters */
 
     // Resolution
-#define Nx 2000
-#define Ny 1000
+#define NX 2000
+#define NY 1000
 
     // Voltage-Based Rendering increments
 #define voltInc 15

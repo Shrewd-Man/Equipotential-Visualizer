@@ -11,15 +11,16 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 #include "config.h"
+//#include "charge.h"
 
 struct charge {
     double spaceX, spaceY, magnitude;
     int pointX, pointY;
 };
 
-double V[Nx][Ny];
-double dx = (XMAX - XMIN) / (Nx - 1);
-double dy = (YMAX - YMIN) / (Ny - 1);
+double V[NX][NY];
+double dx = (XMAX - XMIN) / (NX - 1);
+double dy = (YMAX - YMIN) / (NY - 1);
 
 /**
  *  @brief Function calculates the potential difference of any provided point
@@ -54,8 +55,8 @@ double calcVolt(struct charge charge[], int chargeCount, int xGrid, int yGrid) {
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
 void setupGrid(struct charge charge[], int chargeCount) {
-    for (int i = 0; i < Nx; i++) {
-        for (int j = 0; j < Ny; j++) {
+    for (int i = 0; i < NX; i++) {
+        for (int j = 0; j < NY; j++) {
             V[i][j] = calcVolt(charge, chargeCount, i, j); // Use to calculate the difference
             if (i % 500 == 0 && j % 250 == 0) {  // Sample every 500x250 points
                 printf("V[%d][%d] = %.2e\n", i, j, V[i][j]);
@@ -71,8 +72,8 @@ void setupGrid(struct charge charge[], int chargeCount) {
 double findVoltageExtrema(int type) {
     double Vmin = V[0][0], Vmax = V[0][0]; // create min and max variables
     // use a for loop to calculate values
-    for (int i = 0; i < Nx; i++) {
-        for (int j = 0; j < Ny; j++) {
+    for (int i = 0; i < NX; i++) {
+        for (int j = 0; j < NY; j++) {
             if (V[i][j] < Vmin) Vmin = V[i][j];
             if (V[i][j] > Vmax) Vmax = V[i][j];
             //printf("%.2f is min\n %.2f is max\n\n", Vmin, Vmax);
@@ -111,9 +112,9 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
     printf("Sequence succeeded. Rendering %d voltage lines...\n", numLines);
 
     // Create the image
-    unsigned char img[Ny][Nx];
-    for (int i = 0; i < Nx; i++) {
-        for (int j = 0; j < Ny; j++) {
+    unsigned char img[NY][NX];
+    for (int i = 0; i < NX; i++) {
+        for (int j = 0; j < NY; j++) {
             img[j][i] = 0;  // Black background
         }
     }
@@ -124,8 +125,8 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
             double target = 1.0 / invTarget;
             double tol = 0.005 * target; // or tune this a bit
 
-            for (int i = 0; i < Nx; i++) {
-                for (int j = 0; j < Ny; j++) {
+            for (int i = 0; i < NX; i++) {
+                for (int j = 0; j < NY; j++) {
                     double Vhere = V[i][j];
                     if (fabs(Vhere - target) < tol) {
                         img[j][i] = 255;
@@ -142,7 +143,7 @@ void renderVoltageBased(struct charge charge[], int chargeCount) {
     }
 
     // Write the image to disk
-    stbi_write_png("./eqLinesRendered.png", Nx, Ny, 1, img, Nx);
+    stbi_write_png("./eqLinesRendered.png", NX, NY, 1, img, NX);
 }
 
 int main(int argc, const char * argv[]) {
