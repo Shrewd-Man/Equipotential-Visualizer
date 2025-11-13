@@ -19,6 +19,6 @@
  *  @param chargeCount the total amounts of charges
  *  @param V the voltage coordinate array for which to render
  */
-void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY]);
+void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY], char strIn[32]);
 
 #endif

@@ -66,10 +66,13 @@ int main(int argc, const char * argv[]) {
     printf("Setting up...\n");
     setupGrid(charge, chargeCount, V);
     printf("Setup Complete.\n\n");
+
+    printf("\nVoltage calculation successful. Please enter the filepath for the rendered image (include filename and '.png' extension): ");
+    scanf("%s", strIn);
     
     // render the image
     printf("Rendering...\n");
-    renderVoltageBased(charge, chargeCount, V);
+    renderVoltageBased(charge, chargeCount, V, strIn);
     printf("Rendering Complete.\n\n");
     
     // exit the program

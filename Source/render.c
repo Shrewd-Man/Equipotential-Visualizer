@@ -28,7 +28,7 @@ double findVoltageExtrema(int type, double V[NX][NY]) {
 
 // --- Rendering Function ---
 
-void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY]) {
+void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY], char strIn[32]) {
     printf("Starting beginning extrema sequence...\n");
     
     int numLines = 15;
@@ -79,5 +79,5 @@ void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY]) {
     }
 
     // Write the image to disk
-    stbi_write_png("/Users/kenny/Desktop/eqLinesRendered.png", NX, NY, 1, img, NX);
+    stbi_write_png(strIn, NX, NY, 1, img, NX);
 }
