@@ -8,3 +8,12 @@ build/
 
 # macOS
 .DS_Store
+
+# vsCode
+*.vscode
+
+# Build output
+main
+*.o
+*.dSYM/
+*.exe
