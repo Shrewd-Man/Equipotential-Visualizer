@@ -35,9 +35,9 @@ int main(int argc, const char * argv[]) {
     if(chargeCount < 5 && chargeCount > 0) {
         for(int i = 0; i < chargeCount; i++) {
             // display charge number and request values
-            printf("Charge %d:\nEnter the charge X: ", i + 1);
+            printf("Charge %d:\nEnter the x position of the charge: ", i + 1);
             scanf("%lf", &charge[i].spaceX);
-            printf("Enter the charge Y: ");
+            printf("Enter the y position of charge: ");
             scanf("%lf", &charge[i].spaceY);
             printf("Enter the charge size (enter x to default to one positive microcoulomb and z to default to one negative microcoulomb): ");
             scanf("%s", strIn);
@@ -58,7 +58,7 @@ int main(int argc, const char * argv[]) {
             charge[i].pointY = (int)((charge[i].spaceY - YMIN) / dy + 0.5);
         }
     } else {
-        printf("Next time, choose a proper value. Terminating sesh.");
+        printf("Inputted value exceeds maximum. Terminating session.");
         return 0;
     }
     
