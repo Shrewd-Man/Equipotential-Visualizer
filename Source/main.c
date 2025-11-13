@@ -8,11 +8,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#define STB_IMAGE_WRITE_IMPLEMENTATION
-//#include "stb_image_write.h"
 #include "config.h"
 #include "charge.h"
 #include "render.h"
+#include "grid.h"
+#include "spaceCalc.h"
 
 double V[NX][NY];
 double dx = (XMAX - XMIN) / (NX - 1);
@@ -31,7 +31,7 @@ double dy = (YMAX - YMIN) / (NY - 1);
  *
  *  @return Func returns the value of the potential difference at the given point
  */
-double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
+/*double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
     double xPhys = XMIN + xGrid * dx;
     double yPhys = YMIN + yGrid * dy;
     double potential = 0.0;
@@ -45,7 +45,7 @@ double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
         //potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distanceToCharge + 1e-9);
     }
     return potential;
-}
+}*/
 
 /**
  *  @brief Function calculates the potential difference of every point in the matrix
@@ -56,7 +56,7 @@ double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
  *
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
-void setupGrid(charge_t charge[], int chargeCount) {
+/*void setupGrid(charge_t charge[], int chargeCount) {
     for (int i = 0; i < NX; i++) {
         for (int j = 0; j < NY; j++) {
             V[i][j] = calcVolt(charge, chargeCount, i, j); // Use to calculate the difference
@@ -65,88 +65,8 @@ void setupGrid(charge_t charge[], int chargeCount) {
             }
         }
     }
-}
-/**
- * @brief function finds the minimum and maximum voltage in the space, and returns either min or max
- *
- * @param type indicates return; 1 for max, 0 for min
- */
-/*double findVoltageExtrema(int type) {
-    double Vmin = V[0][0], Vmax = V[0][0]; // create min and max variables
-    // use a for loop to calculate values
-    for (int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            if (V[i][j] < Vmin) Vmin = V[i][j];
-            if (V[i][j] > Vmax) Vmax = V[i][j];
-            //printf("%.2f is min\n %.2f is max\n\n", Vmin, Vmax);
-        }
-    }
-    return type ? Vmax : Vmin; // return value based on type
-} */
-/**
- * @brief This function approaches the rendering by using the voltage of the space
- *
- * The function performs as follows:
- *  - The function first determines the maximum and minimum voltage in the space
- *  - Then a predetermined voltage incrementation is used to generate equipotential contours
- *  - For every point (i, j), check if V[i][j] is close to any of those threshold voltages, and render each pixel white or black
- *
- *  @param charge the structure containing the data for the first charge
- *  @param chargeCount the total amounts of charges
- */
-/* void renderVoltageBased(charge_t charge[], int chargeCount) {
-    printf("Starting beginning extrema sequence...\n");
-    
-    int numLines = 15;
+}*/
 
-    // Find global voltage extrema across the field
-    double Vmin = findVoltageExtrema(0);
-    double Vmax = findVoltageExtrema(1);
-    double invMin = 1.0 / Vmax; // corresponds to high voltage (closer to charge)
-    double invMax = 1.0 / Vmin; // corresponds to low voltage (farther out)
-    
-    if (Vmin < 1e-6) Vmin = 1e-6;
-
-    // Avoid log(0) or negative values
-    //double logMin = log10(Vmin + 1e-9);
-    //double logMax = log10(Vmax);
-    
-    printf("Sequence succeeded. Rendering %d voltage lines...\n", numLines);
-
-    // Create the image
-    unsigned char img[NY][NX];
-    for (int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            img[j][i] = 0;  // Black background
-        }
-    }
-
-    // Loop over log-spaced voltage targets
-    for (int k = 0; k < numLines; k++) {
-            double invTarget = invMin + (invMax - invMin) * k / (numLines - 1);
-            double target = 1.0 / invTarget;
-            double tol = 0.005 * target; // or tune this a bit
-
-            for (int i = 0; i < NX; i++) {
-                for (int j = 0; j < NY; j++) {
-                    double Vhere = V[i][j];
-                    if (fabs(Vhere - target) < tol) {
-                        img[j][i] = 255;
-                    }
-                }
-            }
-        }
-
-    // Set the charge position to a white dot
-    for (int i = 0; i < chargeCount; i++) {
-        int Cx = charge[i].pointX;
-        int Cy = charge[i].pointY;
-        img[Cy][Cx] = 255;  // Mark each charge
-    }
-
-    // Write the image to disk
-    stbi_write_png("/Users/kenny/Desktop/eqLinesRendered.png", NX, NY, 1, img, NX);
-} */
 
 int main(int argc, const char * argv[]) {
     
@@ -194,7 +114,7 @@ int main(int argc, const char * argv[]) {
     
     // calculate all ∆V values
     printf("Setting up...\n");
-    setupGrid(charge, chargeCount);
+    setupGrid(charge, chargeCount, V);
     printf("Setup Complete.\n\n");
     
     // render the image
