@@ -1,4 +1,7 @@
 # Equipotential Simulator/Visualizer
+<p align="center">
+  <img src="images/eqLines2ChargeTest.png" alt="Equipotential Lines Simulation" width="800">
+</p>
 
 ## Description
 I started this project to challenge myself and improve my C skills. The goal is to create a program that allows a user to visualize the interactions of electrostatic fields caused by point charges in space.
@@ -8,9 +11,9 @@ Currently, this project does not have an installation option as it is in its ear
 
 To compile and run:
 - Navigate to the project directory
-- Replace `"./eqLinesRendered.png"` with desired file path for the rendered image
 - Use `gcc main.c -o equipotential -lm` to compile, or use a compiler of your choice
 - Run `./equipotential`
+Note that the image rendering method is under a lot of work right now, and has yet to be finely tuned, so images may not be satisfactory yet.
 
 ## Usage
 Please use in compliance with the GPL—3.0 license. Details are in the file `Equipotential-Visualizer/LICENSE`.
