@@ -23,11 +23,8 @@ double calcVolt(charge_t charge[], int chargeCount, int xGrid, int yGrid) {
     double potential = 0.0;
     for (int i = 0; i < chargeCount; i++) {
         double distanceToCharge = sqrt(pow(xPhys - charge[i].spaceX, 2) + pow(yPhys - charge[i].spaceY, 2));
-        if(charge[i].sign == 1){
-            potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distanceToCharge + 1e-9);
-        } else {
-            potential += (COULOMBS_CONSTANT * (0 - charge[i].magnitude)) / (distanceToCharge + 1e-9);
-        }
+        double q = (charge[i].sign == POSITIVE) ? charge[i].magnitude : -charge[i].magnitude;
+        potential += (COULOMBS_CONSTANT * q) / (distanceToCharge + 1e-9);
         //potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distanceToCharge + 1e-9);
     }
     return potential;
