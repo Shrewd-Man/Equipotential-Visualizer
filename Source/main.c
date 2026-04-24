@@ -39,23 +39,23 @@ int main(int argc, const char * argv[]) {
             scanf("%lf", &charge[i].spaceX);
             printf("Enter the y position of charge: ");
             scanf("%lf", &charge[i].spaceY);
-            printf("Enter the charge size (enter x to default to one positive microcoulomb and z to default to one negative microcoulomb): ");
+            printf("Enter the charge size (enter x to default to one positive nanocoulomb and z to default to one negative nanocoulomb): ");
             scanf("%s", strIn);
             
             // compare string and assign auto-values as needed
             if(strcmp(strIn, "x") == 0) {
-                charge[i].magnitude = (1.0e-6); // 1 microcoulomb
+                charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
                 charge[i].sign = POSITIVE;
             } else if (strcmp(strIn, "z") == 0) {
-                charge[i].magnitude = (1.0e-6); // 1 microcoulomb
+                charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
                 charge[i].sign = NEGATIVE;
             } else {
                 charge[i].magnitude = atof(strIn); // input
             }
             
             // assign and set the point coordinates of the charges based on the spatial coordinates
-            charge[i].pointX = (int)((charge[i].spaceX - XMAX) / dx + 0.5);
-            charge[i].pointY = (int)((charge[i].spaceY - YMIN) / dy + 0.5);
+            charge[i].pointX = (int)(((charge[i].spaceX - XMIN) / dx) + 0.5);
+            charge[i].pointY = (int)(((charge[i].spaceY - YMIN) / dy) + 0.5);
         }
     } else {
         printf("Inputted value exceeds maximum. Terminating session.");
