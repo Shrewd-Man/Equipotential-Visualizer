@@ -2,6 +2,7 @@
 <p align="center">
   <img src="images/eqLines2ChargeTest.png" alt="Equipotential Lines Simulation" width="600">
 </p>
+
 ## Description
 I started this project to challenge myself and improve my C skills. The goal is to create a program that allows a user to visualize the interactions of electrostatic fields caused by point charges in space.
 
