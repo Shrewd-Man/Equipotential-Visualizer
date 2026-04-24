@@ -1,6 +1,6 @@
 # Equipotential Simulator/Visualizer
 <p align="center">
-  <img src="images/eqLines2ChargeTest.png" alt="Equipotential Lines Simulation" width="600">
+  <img src="images/eqLines2ChargeTest.png" alt="Equipotential Lines Simulation" width="800">
 </p>
 
 ## Description
