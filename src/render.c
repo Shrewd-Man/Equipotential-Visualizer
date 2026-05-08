@@ -1,10 +1,11 @@
 // render.c
 #include <stdio.h>
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+
 #include "render.h"
-#include "charge.h"
-#include "config.h"
+
 
 // --- Voltage Extrema Function ---
 /**
