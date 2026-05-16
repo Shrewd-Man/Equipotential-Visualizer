@@ -18,6 +18,10 @@
   - Grid-based field computation, distance calculations, avoiding singularities.
 - **Image processing**: Integration with `stb_image_write.h` for PNG output to desired location.
 
+<p align="center">
+  <img src="images/eqLines2ChargeTest.png" alt="Equipotential Lines Simulation" width="800">
+</p>
+
 ## Installation & Build
 
 ```bash
