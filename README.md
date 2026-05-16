@@ -38,6 +38,7 @@ Run `./equipotential`
 - Supports up to 4 charges currently (easily extensible).
 
 ## Roadmap
+- **First Change**: addition of a grayscale heatmap-like render to outperform flat contours.
 - Modular input to allow implementation in custom applications.
 - Real-time data output formatted for custom rendering programs.
 - 3D extention.
