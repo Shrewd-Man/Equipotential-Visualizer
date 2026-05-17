@@ -70,6 +70,12 @@ void drawContoursForSign(double V[NX][NY], unsigned char img[NY][NX], int sign, 
     }
 }
 
+void drawGrayMap() {
+
+    
+
+}
+
 // --- Rendering Function ---
 
 void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY], char strIn[32]) {
