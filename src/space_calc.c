@@ -1,146 +1,52 @@
-// render.c
 #include <stdio.h>
+#include "space_calc.h"
+#include "charge.h"
+#include "config.h"
+#include "grid.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
-#include "render.h"
-
-
-// --- Voltage Extrema Function ---
+// --- Single Point Voltage Calculation Algorithm ---
 /**
- * @brief function finds the minimum and maximum voltage in the space, and returns either min or max
+ *  @brief Function calculates the potential difference of any provided point
  *
- * @param type indicates return; 1 for max, 0 for min
- * @param V array for voltage calcs
+ *  The function uses the universal formula and currently computes that based on the points distance to the charge x and y
+ *
+ *  @param charge structure data with the charge values
+ *  @param charge_count total amount of charges
+ *  @param x_grid The x grid point of the calculation
+ *  @param y_grid The y grid point of the calculation
+ *
+ *  @return Func returns the value of the potential difference at the given point
  */
-double findVoltageExtrema(charge_t charge[], int chargeCount, int type, double V[NX][NY]) {
-    double Vmin = V[0][0], Vmax = V[0][0]; // create min and max variables
-    double distanceToCharge;
-    int tooClose = 0;
-    // use a for loop to calculate values
+double calc_volt(charge_t charge[], int charge_count, int x_grid, int y_grid) {
+    double x_phys = XMIN + x_grid * dx;
+    double y_phys = YMIN + y_grid * dy;
+    double potential = 0.0;
+    for (int i = 0; i < charge_count; i++) {
+        double distance_to_charge = sqrt(pow(x_phys - charge[i].space_x, 2) + pow(y_phys - charge[i].space_y, 2));
+        double q = (charge[i].sign == POSITIVE) ? charge[i].magnitude : -charge[i].magnitude;
+        potential += (COULOMBS_CONSTANT * q) / (distance_to_charge + 1e-9);
+        //potential += (COULOMBS_CONSTANT * charge[i].magnitude) / (distance_to_charge + 1e-9);
+    }
+    return potential;
+}
+
+// --- Loop System for Each Point ---
+/**
+ *  @brief Function calculates the potential difference of every point in the matrix
+ *
+ *  The function calls the calc_volt for every point in the space
+ *  @param charge the structure containing the data for the first charge
+ *  @param charge_count the total amounts of charges
+ *
+ *  @note This function is currently a temporary system that does not allow for live rendering
+ */
+void setup_grid(charge_t charge[], int charge_count, double V[NX][NY]) {
     for (int i = 0; i < NX; i++) {
         for (int j = 0; j < NY; j++) {
-            tooClose = 0;
-
-            for (int k = 0; k < chargeCount; k++) {
-                distanceToCharge = sqrt(pow((i - charge[k].pointX), 2) + pow((j - charge[k].pointY), 2));
-                if (distanceToCharge < 30) {
-                    tooClose = 1;
-                }
-            }
-            if (tooClose == 0) {
-                if (V[i][j] < Vmin) Vmin = V[i][j];
-                if (V[i][j] > Vmax) Vmax = V[i][j];
-            }
-            //if (V[i][j] < Vmin) Vmin = V[i][j];
-            //if (V[i][j] > Vmax) Vmax = V[i][j];
-            //printf("%.2f is min\n %.2f is max\n\n", Vmin, Vmax);
-        }
-    }
-    return type ? Vmax : Vmin; // return value based on type
-}
-
-void drawContoursForSign(double V[NX][NY], unsigned char img[NY][NX], int sign, double absMax, int numLines) {
-    double Vref = (sign > 0) ? fmax(absMax, 1e-12) : fmax(-absMax, 1e-12);
-    if (Vref < 1e-12) return;
-
-    double logMin = log10(1e-12);
-    double logMax = log10(Vref);
-
-    double logSpacing = (numLines > 1) ? (logMax - logMin) / (numLines - 1) : 0;
-    double tol = logSpacing * 0.25;  // Tolerance as fraction of log spacing
-
-    for (int k = 0; k < numLines; k++) {
-        double t = (numLines == 1) ? 0.0 : (double)k / (numLines - 1);
-        double logTarget = logMin + (logMax - logMin) * t;
-        double targetMag = pow(10.0, logTarget);
-
-        for (int i = 0; i < NX; i++) {
-            for (int j = 0; j < NY; j++) {
-                double Vhere = V[i][j];
-                if ((Vhere > 0 && sign > 0) || (Vhere < 0 && sign < 0)) {
-                    double logVhere = log10(fabs(Vhere));
-                    if (fabs(logVhere - logTarget) < tol) {
-                        img[j][i] = 255;
-                    }
-                }
+            V[i][j] = calc_volt(charge, charge_count, i, j); // Use to calculate the difference
+            if (i % 500 == 0 && j % 250 == 0) {  // Sample every 500x250 points
+                printf("V[%d][%d] = %.2e\n", i, j, V[i][j]);
             }
         }
     }
-}
-
-void drawGrayMap() {
-    
-    
-
-}
-
-// --- Rendering Function ---
-
-void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY], char strIn[32]) {
-    printf("Starting beginning extrema sequence...\n");
-    
-    int numLines = 15;
-
-    // Find global voltage extrema across the field
-    double Vmin = findVoltageExtrema(charge, chargeCount, 0, V);
-    double Vmax = findVoltageExtrema(charge, chargeCount, 1, V);
-
-
-    double absMin = fmax(fabs(Vmin), fabs(Vmax));
-    if (absMin < 1e-12) absMin = 1e-12;
-
-    double logMin = log10(1e-12);  // floor
-    double logMax = log10(absMin);
-
-
-    // Avoid log(0) or negative values
-    //double logMin = log10(Vmin + 1e-9);
-    //double logMax = log10(Vmax);
-    
-    printf("Sequence succeeded. Rendering %d voltage lines...\n", numLines);
-
-    // Create the image
-    unsigned char img[NY][NX];
-    for (int i = 0; i < NX; i++) {
-        for (int j = 0; j < NY; j++) {
-            img[j][i] = 0;  // Black background
-        }
-    }
-
-    // Loop over log-spaced voltage targets
-    /*for (int k = 0; k < numLines; k++) {
-        double invTarget = invMin + (invMax - invMin) * k / (numLines - 1);
-        double target = 1.0 / invTarget;
-        double tol = 0.005 * target; // or tune this a bit
-
-        for (int i = 0; i < NX; i++) {
-            for (int j = 0; j < NY; j++) {
-                double Vhere = V[i][j];
-                if (fabs(Vhere - target) < tol) {
-                    img[j][i] = 255;
-                }
-            }
-        }
-    }*/
-
-    if (Vmax > 1e-12) {
-        drawContoursForSign(V, img, +1, Vmax, numLines);
-    }
-
-    // Draw negative contours
-    if (Vmin < -1e-12) {
-        drawContoursForSign(V, img, -1, Vmin, numLines);
-    }
-
-    // Set the charge position to a white dot
-    for (int i = 0; i < chargeCount; i++) {
-        int Cx = charge[i].pointX;
-        int Cy = charge[i].pointY;
-        img[Cy][Cx] = 255;  // Mark each charge
-    }
-
-    // Write the image to disk
-    stbi_write_png(strIn, NX, NY, 1, img, NX);
 }
