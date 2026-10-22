@@ -18,7 +18,7 @@
 #define NY 1000
 
     // Voltage-Based Rendering increments
-#define voltInc 15
+#define VOLT_INC 15
 
 // --- CONSTANTS ---
 

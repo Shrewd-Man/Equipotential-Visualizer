@@ -12,7 +12,7 @@
 #include "charge.h"
 #include "render.h"
 #include "grid.h"
-#include "spaceCalc.h"
+#include "space_calc.h"
 
 double V[NX][NY];
 double dx = (XMAX - XMIN) / (NX - 1);
@@ -24,38 +24,38 @@ int main(int argc, const char * argv[]) {
     charge_t charge[4];
     
     // Create an int to define the amount of charges the user has requested
-    int chargeCount;
+    int charge_count;
     
     // create an input variable
-    char strIn[32];
+    char str_in[32];
     
     printf("Enter the amount of charges: ");
-    scanf("%d", &chargeCount);
+    scanf("%d", &charge_count);
     
-    if(chargeCount < 5 && chargeCount > 0) {
-        for(int i = 0; i < chargeCount; i++) {
+    if(charge_count < 5 && charge_count > 0) {
+        for(int i = 0; i < charge_count; i++) {
             // display charge number and request values
             printf("Charge %d:\nEnter the x position of the charge: ", i + 1);
-            scanf("%lf", &charge[i].spaceX);
+            scanf("%lf", &charge[i].space_x);
             printf("Enter the y position of charge: ");
-            scanf("%lf", &charge[i].spaceY);
+            scanf("%lf", &charge[i].space_y);
             printf("Enter the charge size (enter x to default to one positive nanocoulomb and z to default to one negative nanocoulomb): ");
-            scanf("%s", strIn);
+            scanf("%s", str_in);
             
             // compare string and assign auto-values as needed
-            if(strcmp(strIn, "x") == 0) {
+            if(strcmp(str_in, "x") == 0) {
                 charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
                 charge[i].sign = POSITIVE;
-            } else if (strcmp(strIn, "z") == 0) {
+            } else if (strcmp(str_in, "z") == 0) {
                 charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
                 charge[i].sign = NEGATIVE;
             } else {
-                charge[i].magnitude = atof(strIn); // input
+                charge[i].magnitude = atof(str_in); // input
             }
             
             // assign and set the point coordinates of the charges based on the spatial coordinates
-            charge[i].pointX = (int)(((charge[i].spaceX - XMIN) / dx) + 0.5);
-            charge[i].pointY = (int)(((charge[i].spaceY - YMIN) / dy) + 0.5);
+            charge[i].point_x = (int)(((charge[i].space_x - XMIN) / dx) + 0.5);
+            charge[i].point_y = (int)(((charge[i].space_y - YMIN) / dy) + 0.5);
         }
     } else {
         printf("Inputted value exceeds maximum. Terminating session.");
@@ -64,15 +64,15 @@ int main(int argc, const char * argv[]) {
     
     // calculate all ∆V values
     printf("Setting up...\n");
-    setupGrid(charge, chargeCount, V);
+    setup_grid(charge, charge_count, V);
     printf("Setup Complete.\n\n");
 
     printf("\nVoltage calculation successful. Please enter the filepath for the rendered image (include filename and '.png' extension): ");
-    scanf("%s", strIn);
+    scanf("%s", str_in);
     
     // render the image
     printf("Rendering...\n");
-    renderVoltageBased(charge, chargeCount, V, strIn);
+    render_voltage_based(charge, charge_count, V, str_in);
     printf("Rendering Complete.\n\n");
     
     // exit the program

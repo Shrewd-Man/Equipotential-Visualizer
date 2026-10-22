@@ -16,9 +16,9 @@
  *  - For every point (i, j), check if V[i][j] is close to any of those threshold voltages, and render each pixel white or black
  *
  *  @param charge the structure containing the data for the first charge
- *  @param chargeCount the total amounts of charges
+ *  @param charge_count the total amounts of charges
  *  @param V the voltage coordinate array for which to render
  */
-void renderVoltageBased(charge_t charge[], int chargeCount, double V[NX][NY], char strIn[32]);
+void render_voltage_based(charge_t charge[], int charge_count, double V[NX][NY], char str_in[32]);
 
 #endif
