@@ -11,11 +11,11 @@ typedef enum {
 
 // --- Charge Structure ---
 typedef struct charge_t {
-    double spaceX;  /* Meters */
-    double spaceY;  /* Meters */
+    double space_x;  /* Meters */
+    double space_y;  /* Meters */
 
-    int pointX; /* Point-based Coordinates */
-    int pointY; /* Point-based Coordinates */
+    int point_x; /* Point-based Coordinates */
+    int point_y; /* Point-based Coordinates */
 
     double magnitude; /* Coulombs */
 
