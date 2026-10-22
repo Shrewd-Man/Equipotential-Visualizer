@@ -26,9 +26,10 @@ int main(int argc, const char * argv[]) {
     // Create an int to define the amount of charges the user has requested
     int charge_count;
     
-    // create an input variable
+    // create input buffers (charge size entry, and the output image path)
     char str_in[32];
-    
+    char output_path[256];
+
     printf("Enter the amount of charges: ");
     scanf("%d", &charge_count);
     
@@ -40,8 +41,8 @@ int main(int argc, const char * argv[]) {
             printf("Enter the y position of charge: ");
             scanf("%lf", &charge[i].space_y);
             printf("Enter the charge size (enter x to default to one positive nanocoulomb and z to default to one negative nanocoulomb): ");
-            scanf("%s", str_in);
-            
+            scanf("%31s", str_in); // width limit leaves room for the null terminator
+
             // compare string and assign auto-values as needed
             if(strcmp(str_in, "x") == 0) {
                 charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
@@ -50,7 +51,10 @@ int main(int argc, const char * argv[]) {
                 charge[i].magnitude = (1.0e-9); // 1 nanocoulomb
                 charge[i].sign = NEGATIVE;
             } else {
-                charge[i].magnitude = atof(str_in); // input
+                // custom value in coulombs: the sign comes from the value, magnitude is stored as absolute
+                double value = atof(str_in);
+                charge[i].sign = (value < 0) ? NEGATIVE : POSITIVE;
+                charge[i].magnitude = fabs(value);
             }
             
             // assign and set the point coordinates of the charges based on the spatial coordinates
@@ -68,11 +72,11 @@ int main(int argc, const char * argv[]) {
     printf("Setup Complete.\n\n");
 
     printf("\nVoltage calculation successful. Please enter the filepath for the rendered image (include filename and '.png' extension): ");
-    scanf("%s", str_in);
-    
+    scanf("%255s", output_path);
+
     // render the image
     printf("Rendering...\n");
-    render_voltage_based(charge, charge_count, V, str_in);
+    render_voltage_based(charge, charge_count, V, output_path);
     printf("Rendering Complete.\n\n");
     
     // exit the program

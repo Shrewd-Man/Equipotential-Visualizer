@@ -78,7 +78,7 @@ void draw_gray_map() {
 
 // --- Rendering Function ---
 
-void render_voltage_based(charge_t charge[], int charge_count, double V[NX][NY], char str_in[32]) {
+void render_voltage_based(charge_t charge[], int charge_count, double V[NX][NY], const char *output_path) {
     printf("Starting beginning extrema sequence...\n");
     
     int num_lines = 15;
@@ -142,5 +142,5 @@ void render_voltage_based(charge_t charge[], int charge_count, double V[NX][NY],
     }
 
     // Write the image to disk
-    stbi_write_png(str_in, NX, NY, 1, img, NX);
+    stbi_write_png(output_path, NX, NY, 1, img, NX);
 }
