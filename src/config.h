@@ -20,6 +20,10 @@
     // Voltage-Based Rendering increments
 #define VOLT_INC 15
 
+    // Voltage-Based Rendering contours
+#define CONTOUR_LINES 8      /* Contour lines drawn for each charge sign */
+#define CONTOUR_DECADES 2.0  /* How far below its peak a sign's contours reach, in powers of ten */
+
 // --- CONSTANTS ---
 
     // Coulombs Constant

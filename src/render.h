@@ -12,8 +12,8 @@
  *
  * The function performs as follows:
  *  - The function first determines the maximum and minimum voltage in the space
- *  - Then a predetermined voltage incrementation is used to generate equipotential contours
- *  - For every point (i, j), check if V[i][j] is close to any of those threshold voltages, and render each pixel white or black
+ *  - Then, for the positive and the negative voltages separately, CONTOUR_LINES log-spaced voltage levels are chosen
+ *  - A line is drawn (white) wherever two neighbouring points (i, j) fall between different levels, everything else stays black
  *
  *  @param charge the structure containing the data for the first charge
  *  @param charge_count the total amounts of charges
