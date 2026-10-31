@@ -1,0 +1,26 @@
+# Doxyfile for Equipotential Visualizer (paths are relative to the repo root)
+# Build the PDF from the repo root with:  doxygen docs/Doxyfile && make -C docs/build/latex
+PROJECT_NAME           = "Equipotential Visualizer"
+PROJECT_BRIEF          = "2D electrostatic equipotential line simulator in C"
+OUTPUT_DIRECTORY       = docs/build
+INPUT                  = src README.md
+FILE_PATTERNS          = *.c *.h
+EXCLUDE                = src/stb_image_write.h
+IMAGE_PATH             = images
+USE_MDFILE_AS_MAINPAGE = README.md
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+SOURCE_BROWSER         = YES
+GENERATE_HTML          = NO
+GENERATE_LATEX         = YES
+USE_PDFLATEX           = YES
+PDF_HYPERLINKS         = YES
+LATEX_BATCHMODE        = YES
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+INCLUDE_GRAPH          = YES
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = YES
+LATEX_EXTRA_STYLESHEET = docs/doxygen-extra.sty
