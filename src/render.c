@@ -12,8 +12,12 @@
 /**
  * @brief function finds the minimum and maximum voltage in the space, and returns either min or max
  *
+ * @param charge the array of charges (points within 30 grid cells of any charge are ignored)
+ * @param charge_count the total amount of charges
  * @param type indicates return; 1 for max, 0 for min
  * @param V array for voltage calcs
+ *
+ * @return the maximum voltage if type is 1, otherwise the minimum voltage
  */
 double find_voltage_extrema(charge_t charge[], int charge_count, int type, double V[NX][NY]) {
     // start from the opposite ends so a charge sitting on the V[0][0] corner can't poison the result
