@@ -14,10 +14,27 @@
 #include "grid.h"
 #include "space_calc.h"
 
+/** @brief Voltage at every grid point, indexed V[x][y] */
 double V[NX][NY];
+/** @brief Grid spacing along x in meters, derived from XMIN, XMAX and NX */
 double dx = (XMAX - XMIN) / (NX - 1);
+/** @brief Grid spacing along y in meters, derived from YMIN, YMAX and NY */
 double dy = (YMAX - YMIN) / (NY - 1);
 
+/**
+ * @brief Program entry point: reads the charges, computes the voltage field, and renders it to a PNG
+ *
+ * The program runs in four steps:
+ *  - Asks for the number of charges (1 to 4), then each charge's position and size
+ *  - Computes the voltage at every grid point with setup_grid()
+ *  - Asks for an output file path (including the '.png' extension)
+ *  - Draws the equipotential contours with render_voltage_based() and writes the image
+ *
+ * @param argc number of command-line arguments (unused)
+ * @param argv command-line arguments (unused)
+ *
+ * @return 0 on completion, also 0 if the requested charge count is outside 1 to 4
+ */
 int main(int argc, const char * argv[]) {
     
     // create array of 4 charges
