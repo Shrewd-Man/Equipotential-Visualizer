@@ -30,7 +30,7 @@ cd Equipotential-Visualizer
 
 # Compile (from src directory or adjust paths)
 gcc src/*.c -o equipotential -lm -I src
-````
+```
 Run `./equipotential`
 
 ## Usage Example

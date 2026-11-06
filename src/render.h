@@ -8,14 +8,14 @@
 // --- VOLTAGE BASED RENDERING ---
 
 /**
- * @brief This function approaches the rendering by using the voltage of the space
+ * @brief Renders the voltage field as white equipotential contour lines on a black PNG
  *
  * The function performs as follows:
  *  - The function first determines the maximum and minimum voltage in the space
  *  - Then, for the positive and the negative voltages separately, CONTOUR_LINES log-spaced voltage levels are chosen
  *  - A line is drawn (white) wherever two neighbouring points (i, j) fall between different levels, everything else stays black
  *
- *  @param charge the structure containing the data for the first charge
+ *  @param charge the array of charges (each is drawn as a single white dot)
  *  @param charge_count the total amounts of charges
  *  @param V the voltage coordinate array for which to render
  *  @param output_path the filepath (including the '.png' extension) to write the rendered image to

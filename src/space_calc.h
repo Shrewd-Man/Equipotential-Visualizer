@@ -13,6 +13,7 @@
  *  The function calls the calc_volt for every point in the space
  *  @param charge the structure containing the data for the first charge
  *  @param charge_count the total amounts of charges
+ *  @param V the voltage array to fill, one value per grid point
  *
  *  @note This function is currently a temporary system that does not allow for live rendering
  */
